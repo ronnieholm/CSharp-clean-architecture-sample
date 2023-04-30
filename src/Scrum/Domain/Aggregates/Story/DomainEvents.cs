@@ -14,11 +14,11 @@ namespace Scrum.Domain.Aggregates.Story;
 
 public record StoryCreated(
     StoryId Id,
-    StoryName Name,
+    StoryTitle Title,
     StoryDescription? Description) : DomainEvent;
 
 public record StoryTaskAdded(
     StoryTaskId TaskId,
     StoryId StoryId,
-    StoryTaskName Name,
+    StoryTaskTitle Title,
     StoryTaskDescription? Description) : DomainEvent;

@@ -18,12 +18,12 @@ public class StoryTaskId : ValueObject
     protected override IEnumerable<object> GetAtomicValues() { yield return Value; }
 }
 
-public class StoryTaskName : ValueObject
+public class StoryTaskTitle : ValueObject
 {
     public const int MaxLength = 50;
     public string Value { get; }
 
-    public StoryTaskName(string value, string field = nameof(StoryTaskName))
+    public StoryTaskTitle(string value, string field = nameof(StoryTaskTitle))
     {
         if (string.IsNullOrWhiteSpace(value))
             throw new ValidationException(field, "Must not be empty or whitespace.");
@@ -32,8 +32,8 @@ public class StoryTaskName : ValueObject
         Value = value;
     }
 
-    public static explicit operator StoryTaskName(string v) => new(v);
-    public static implicit operator string(StoryTaskName v) => v.Value;    
+    public static explicit operator StoryTaskTitle(string v) => new(v);
+    public static implicit operator string(StoryTaskTitle v) => v.Value;    
     protected override IEnumerable<object> GetAtomicValues() { yield return Value; }
 }
 
@@ -58,12 +58,12 @@ public class StoryTaskDescription : ValueObject
 
 public class StoryTask : Entity<StoryTaskId>
 {
-    public StoryTaskName Name { get; }
+    public StoryTaskTitle Title { get; }
     public StoryTaskDescription? Description { get; }
 
-    public StoryTask(StoryTaskId id, StoryTaskName name, StoryTaskDescription? description) : base(id)
+    public StoryTask(StoryTaskId id, StoryTaskTitle title, StoryTaskDescription? description) : base(id)
     {
-        Name = name;
+        Title = title;
         Description = description;
     }
 }

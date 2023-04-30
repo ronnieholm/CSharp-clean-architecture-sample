@@ -8,6 +8,6 @@ public record StoryDto(
     string? Description)
 {
     public static StoryDto FromDomain(Story s) =>
-        new(s.Id, s.Name, s.Description?.Value);
+        new(s.Id, s.Title, s.Description?.Value);
 }
 

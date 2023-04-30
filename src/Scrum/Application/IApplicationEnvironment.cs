@@ -16,4 +16,6 @@ public interface IApplicationEnvironment
 {
     public ISystemClock SystemClock { get;}
     public IStoryRepository StoryRepository { get; }
+    public Task CommitAsync();
+    public Task RollbackAsync();
 }

@@ -9,7 +9,7 @@ public class Entity<TId> where TId : notnull
     // of AuditableEntity instead.
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-
+    
     protected Entity(TId id) => Id = id;
 
     public override bool Equals(object? obj)

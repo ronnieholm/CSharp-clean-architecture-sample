@@ -18,12 +18,12 @@ public class StoryId : ValueObject
     protected override IEnumerable<object> GetAtomicValues() { yield return Value; }
 }
 
-public class StoryName : ValueObject
+public class StoryTitle : ValueObject
 {
     public const int MaxLength = 50;
     public string Value { get; }
 
-    public StoryName(string value, string field = nameof(StoryName))
+    public StoryTitle(string value, string field = nameof(StoryTitle))
     {
         if (string.IsNullOrWhiteSpace(value))
             throw new ValidationException(field, "Must not be empty or whitespace.");
@@ -32,8 +32,8 @@ public class StoryName : ValueObject
         Value = value;
     }
 
-    public static explicit operator StoryName(string v) => new(v);
-    public static implicit operator string(StoryName v) => v.Value;    
+    public static explicit operator StoryTitle(string v) => new(v);
+    public static implicit operator string(StoryTitle v) => v.Value;    
     protected override IEnumerable<object> GetAtomicValues() { yield return Value; }
 }
 
@@ -58,24 +58,32 @@ public class StoryDescription : ValueObject
 
 public class Story : AggregateRoot<StoryId>
 {
-    public StoryName Name { get; }
+    public StoryTitle Title { get; }
     public StoryDescription? Description { get; }
-    public List<StoryTask> Tasks => _tasks.ToList();
+    public List<StoryTask> Tasks { get; }
 
-    private readonly ICollection<StoryTask> _tasks = new List<StoryTask>();
-
-    public Story(StoryId id, StoryName name, StoryDescription? description) : base(id)
+    private Story(StoryId id, StoryTitle title, StoryDescription? description, DateTime createdAt, DateTime updatedAt, List<StoryTask> tasks) : base(id)
     {
-        Name = name;
+        Title = title;
         Description = description;
-        AddDomainEvent(new StoryCreated(Id, name, description));
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
+        Tasks = tasks;
+    }
+    
+    public Story(StoryId id, StoryTitle title, StoryDescription? description) : base(id)
+    {
+        Title = title;
+        Description = description;
+        Tasks = new List<StoryTask>();
+        DomainEvents.Enqueue(new StoryCreated(Id, title, description));
     }
 
     public void AddTask(StoryTask task)
     {
         // TODO: test for duplicate
         // TODO: update tasks collection
-        AddDomainEvent(new StoryTaskAdded(task.Id, Id, task.Name, task.Description));
+        DomainEvents.Enqueue(new StoryTaskAdded(task.Id, Id, task.Title, task.Description));
     }
 }
 

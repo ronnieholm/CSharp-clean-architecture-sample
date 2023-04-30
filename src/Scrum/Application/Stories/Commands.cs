@@ -22,7 +22,7 @@ public static class Commands
             throw new ConflictException(typeof(Story), cmd.Id);
 
         // TODO: aggregate errors and throw ValidationException from Application layer.
-        var name = new StoryName(cmd.Name);
+        var name = new StoryTitle(cmd.Name);
         var description = cmd.Description == null ? null : new StoryDescription(cmd.Description);
         var story = new Story(id, name, description);
 
@@ -46,7 +46,7 @@ public static class Commands
 
         // TODO: aggregate errors
         var taskId = new StoryTaskId(cmd.TaskId);
-        var name = new StoryTaskName(cmd.Name);
+        var name = new StoryTaskTitle(cmd.Name);
         var description = cmd.Description == null ? null : new StoryTaskDescription(cmd.Description);
         var task = new StoryTask(taskId, name, description);
 
