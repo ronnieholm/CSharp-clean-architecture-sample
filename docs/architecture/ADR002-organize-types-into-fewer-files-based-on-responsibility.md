@@ -1,4 +1,4 @@
-# ADR001: Organize types into files based on responsibility
+# ADR001: Organize types into fewer files based on responsibility
 
 Status: Accepted and active.
 

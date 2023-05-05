@@ -1,4 +1,3 @@
-using System.ComponentModel.Design.Serialization;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Reflection;

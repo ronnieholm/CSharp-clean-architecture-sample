@@ -1,4 +1,4 @@
-# ADR003: Database layer setting metadata fields
+# ADR003: Set metadata fields in database layer
 
 Status: Accepted and active.
 
