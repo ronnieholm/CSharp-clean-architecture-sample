@@ -33,7 +33,7 @@ public class StoryTitle : ValueObject
     }
 
     public static explicit operator StoryTitle(string v) => new(v);
-    public static implicit operator string(StoryTitle v) => v.Value;    
+    public static implicit operator string(StoryTitle v) => v.Value;
     protected override IEnumerable<object> GetAtomicValues() { yield return Value; }
 }
 
@@ -52,7 +52,7 @@ public class StoryDescription : ValueObject
     }
 
     public static explicit operator StoryDescription(string v) => new(v);
-    public static implicit operator string(StoryDescription v) => v.Value;    
+    public static implicit operator string(StoryDescription v) => v.Value;
     protected override IEnumerable<object> GetAtomicValues() { yield return Value; }
 }
 
@@ -62,15 +62,22 @@ public class Story : AggregateRoot<StoryId>
     public StoryDescription? Description { get; }
     public List<StoryTask> Tasks { get; }
 
-    private Story(StoryId id, StoryTitle title, StoryDescription? description, DateTime createdAt, DateTime updatedAt, List<StoryTask> tasks) : base(id)
+    public Story(StoryId id, StoryTitle title, StoryDescription? description, DateTime createdAt, DateTime updatedAt, List<StoryTask> tasks) : base(id)
     {
+        // TODO: verify that if called from anywhere but a repository, then throw exception.
+        // Rather than being absolute in design choices and making the ctor private so it can't be called by accident,
+        // and incurring the trouble of using reflecting to locate and call it (and possible runtime issues may cause),
+        // make it public and check at runtime that it's used as intended. Being absolute, non-pragmatic, is a good
+        // source of accidental complexity.
+        //
+        // This ctor will always have more arguments than the one non-repo clients must use as it includes timestamps.
         Title = title;
         Description = description;
         CreatedAt = createdAt;
         UpdatedAt = updatedAt;
         Tasks = tasks;
     }
-    
+
     public Story(StoryId id, StoryTitle title, StoryDescription? description) : base(id)
     {
         Title = title;

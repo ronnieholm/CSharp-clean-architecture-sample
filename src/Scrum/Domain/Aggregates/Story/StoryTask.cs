@@ -33,7 +33,7 @@ public class StoryTaskTitle : ValueObject
     }
 
     public static explicit operator StoryTaskTitle(string v) => new(v);
-    public static implicit operator string(StoryTaskTitle v) => v.Value;    
+    public static implicit operator string(StoryTaskTitle v) => v.Value;
     protected override IEnumerable<object> GetAtomicValues() { yield return Value; }
 }
 
@@ -52,7 +52,7 @@ public class StoryTaskDescription : ValueObject
     }
 
     public static explicit operator StoryTaskDescription(string v) => new(v);
-    public static implicit operator string(StoryTaskDescription v) => v.Value;    
+    public static implicit operator string(StoryTaskDescription v) => v.Value;
     protected override IEnumerable<object> GetAtomicValues() { yield return Value; }
 }
 

@@ -43,6 +43,8 @@ public class StoryRepository : IStoryRepository
         cmd.Parameters.AddWithValue("@id", id.Value.ToString());
         var r = await cmd.ExecuteReaderAsync();
 
+        // TODO: if result is empty return null
+        
         Story? story = null;
         // read s.id. For each identity s.id, add task.
         while (await r.ReadAsync())
@@ -50,17 +52,14 @@ public class StoryRepository : IStoryRepository
             var title = (string)r["title"];
             var description = r["sdescription"] == DBNull.Value ? null : (string)r["sdescription"];
             var createdAt = DateTime.Parse((string)r["screated_at"]);
-            var updatedAt = r["updated_at"] == DBNull.Value ? (DateTime?)null : DateTime.Parse((string)r["supdated_at"]);
-            var ctor = typeof(Story).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-            story = (Story)ctor!.Invoke(new object[]
-            {
+            var updatedAt = DateTime.Parse((string)r["supdated_at"]);
+            story = new Story(
                 id,
                 new StoryTitle(title),
                 (description == null ? null : new StoryDescription(description))!,
                 createdAt,
-                createdAt, // TODO: fix me to UpdatedAt non-nullable
-                new List<StoryTask>()
-            });
+                updatedAt,
+                new List<StoryTask>());
         }
 
         return story!;
@@ -78,28 +77,30 @@ public class StoryRepository : IStoryRepository
             switch (evt)
             {
                 case StoryCreated sc:
-                {
-                    await using var cmd = new SQLiteCommand("insert into stories (id, title, description, created_at) values (@id, @title, @description, @createdAt)", _con, _tx);
-                    cmd.Parameters.AddWithValue("@id", sc.Id.Value.ToString());
-                    cmd.Parameters.AddWithValue("@title", sc.Title.Value);
-                    cmd.Parameters.AddWithValue("@description", sc.Description?.Value);
-                    cmd.Parameters.AddWithValue("@createdAt", now);
-                    var rows = await cmd.ExecuteNonQueryAsync();                
-                    Debug.Assert(rows == 1);
-                    break;                    
-                }
+                    {
+                        await using var cmd = new SQLiteCommand("insert into stories (id, title, description, created_at, updated_at) values (@id, @title, @description, @createdAt, @updatedAt)", _con, _tx);
+                        cmd.Parameters.AddWithValue("@id", sc.Id.Value.ToString());
+                        cmd.Parameters.AddWithValue("@title", sc.Title.Value);
+                        cmd.Parameters.AddWithValue("@description", sc.Description?.Value);
+                        cmd.Parameters.AddWithValue("@createdAt", now);
+                        cmd.Parameters.AddWithValue("@updatedAt", now);
+                        var rows = await cmd.ExecuteNonQueryAsync();
+                        Debug.Assert(rows == 1);
+                        break;
+                    }
                 case StoryTaskAdded sta:
-                {
-                    await using var cmd = new SQLiteCommand("insert into tasks (id, story_id, title, description, created_at) values (@id, @storyId, @title, @description, @createdAt)", _con, _tx);
-                    cmd.Parameters.AddWithValue("@id", sta.TaskId.Value.ToString());
-                    cmd.Parameters.AddWithValue("@storyId", sta.StoryId.Value.ToString());
-                    cmd.Parameters.AddWithValue("@title", sta.Title.Value);
-                    cmd.Parameters.AddWithValue("@description", sta.Description?.Value);
-                    cmd.Parameters.AddWithValue("@createdAt", now);
-                    var rows = await cmd.ExecuteNonQueryAsync();                
-                    Debug.Assert(rows == 1);
-                    break;
-                }
+                    {
+                        await using var cmd = new SQLiteCommand("insert into tasks (id, story_id, title, description, created_at, updated_at) values (@id, @storyId, @title, @description, @createdAt, @updatedAt)", _con, _tx);
+                        cmd.Parameters.AddWithValue("@id", sta.TaskId.Value.ToString());
+                        cmd.Parameters.AddWithValue("@storyId", sta.StoryId.Value.ToString());
+                        cmd.Parameters.AddWithValue("@title", sta.Title.Value);
+                        cmd.Parameters.AddWithValue("@description", sta.Description?.Value);
+                        cmd.Parameters.AddWithValue("@createdAt", now);
+                        cmd.Parameters.AddWithValue("@updatedAt", now);
+                        var rows = await cmd.ExecuteNonQueryAsync();
+                        Debug.Assert(rows == 1);
+                        break;
+                    }
                 default:
                     throw new NotImplementedException(evt.GetType().Name);
             }

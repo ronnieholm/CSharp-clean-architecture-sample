@@ -2,12 +2,14 @@
 
 -- $ sqlite3 scrum.sqlite < infrastructure/sql/20230427-initial.sql
 
+-- TODO: Add cascading delete
+
 create table stories(
     id text primary key,
     title text not null,
     description text null,
     created_at text not null,
-    updated_at text null
+    updated_at text not null
 ) strict;
 
 create table tasks(
@@ -16,7 +18,7 @@ create table tasks(
     title text not null,
     description text null,
     created_at text not null,
-    updated_at text null    
+    updated_at text not null
 ) strict;
 
 -- TODO: extend with more field from actual solution

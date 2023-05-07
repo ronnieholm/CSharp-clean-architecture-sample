@@ -43,9 +43,19 @@ public class ApplicationEnvironment : IApplicationEnvironment, IDisposable
     }
 }
 
+public interface IPipelineBehavior
+{
+    Task<object> Handle(IRequest request);
+}
+
 public class Mediator
 {
-    public async Task<object> DispatchAsync(IRequest request)
+    // private Task<object> Logger(IPipelineBehavior next, int custom)
+    // {
+    //     return null;
+    // }
+    
+    public async Task<TResponse> DispatchAsync<TResponse>(IRequest request)
     {
         var env = new ApplicationEnvironment();
         object response = request switch
@@ -57,6 +67,6 @@ public class Mediator
         };
 
         await env.CommitAsync();
-        return response;
+        return (TResponse)response;
     }
 }

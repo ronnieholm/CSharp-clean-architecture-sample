@@ -26,6 +26,18 @@ serializing the request to JSON and logging it. This way Azure AppInsights will
 contain the complete request in case of failure. It's easy for us to see exactly
 what the client sent and replay a failing request.
 
+A pipeline may be implemented in at least three different ways:
+
+1. Directly adding any before and after code to the request dipatcher method.
+1. Implementing each behavior as a class with behavior state and a
+   reference to the next behavior.
+1. Implementing each behavior as a method closing over any behavior state and a
+   reference to the next behavior.
+
+Each is a way to implement the decorator pattern. (1) mixes dispatching with
+behaviors which may be acceptable for a simple pipeline, (2) is good for
+behaviors with significant state and code, (3) is good for short behaviors.
+
 ## Consequences
 
 A host such as ASP.NET provides its own pipeline. We could take advantage of its
