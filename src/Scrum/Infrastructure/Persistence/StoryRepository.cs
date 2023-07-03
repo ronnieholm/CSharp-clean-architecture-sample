@@ -1,6 +1,5 @@
 using System.Data.SQLite;
 using System.Diagnostics;
-using System.Reflection;
 using Scrum.Application;
 using Scrum.Domain.Aggregates.Story;
 
@@ -35,16 +34,17 @@ public class StoryRepository : IStoryRepository
     public async Task<Story> GetByIdAsync(StoryId id)
     {
         await using var cmd = new SQLiteCommand(
-            @"select s.id sid, s.title, s.description sdescription, s.created_at screated_at, s.updated_at supdated_at,
-                     t.id tid, t.title, t.description tdescription, t.created_at tcreated_at, t.updated_at tupdated_at
+            @"select s.id sid, s.title stitle, s.description sdescription, s.created_at screated_at, s.updated_at supdated_at,
+                     t.id tid, t.title ttitle, t.description tdescription, t.created_at tcreated_at, t.updated_at tupdated_at
               from stories s
               left join tasks t on s.id == t.story_id
-              where s.id = @id", _con, _tx);
+              where s.id = @id",
+            _con, _tx);
         cmd.Parameters.AddWithValue("@id", id.Value.ToString());
         var r = await cmd.ExecuteReaderAsync();
 
         // TODO: if result is empty return null
-        
+
         Story? story = null;
         // read s.id. For each identity s.id, add task.
         while (await r.ReadAsync())
@@ -77,30 +77,37 @@ public class StoryRepository : IStoryRepository
             switch (evt)
             {
                 case StoryCreated sc:
-                    {
-                        await using var cmd = new SQLiteCommand("insert into stories (id, title, description, created_at, updated_at) values (@id, @title, @description, @createdAt, @updatedAt)", _con, _tx);
-                        cmd.Parameters.AddWithValue("@id", sc.Id.Value.ToString());
-                        cmd.Parameters.AddWithValue("@title", sc.Title.Value);
-                        cmd.Parameters.AddWithValue("@description", sc.Description?.Value);
-                        cmd.Parameters.AddWithValue("@createdAt", now);
-                        cmd.Parameters.AddWithValue("@updatedAt", now);
-                        var rows = await cmd.ExecuteNonQueryAsync();
-                        Debug.Assert(rows == 1);
-                        break;
-                    }
+                {
+                    await using var cmd = new SQLiteCommand(
+                        "insert into stories (id, title, description, created_at, updated_at) values (@id, @title, @description, @createdAt, @updatedAt)",
+                        _con, _tx);
+                    var p = cmd.Parameters;
+                    p.AddWithValue("@id", sc.Id.Value.ToString());
+                    p.AddWithValue("@title", sc.Title.Value);
+                    p.AddWithValue("@description", sc.Description?.Value);
+                    // TODO: Convert time into integer (how to keep ms?)
+                    p.AddWithValue("@createdAt", now);
+                    p.AddWithValue("@updatedAt", now);
+                    var rows = await cmd.ExecuteNonQueryAsync();
+                    Debug.Assert(rows == 1);
+                    break;
+                }
                 case StoryTaskAdded sta:
-                    {
-                        await using var cmd = new SQLiteCommand("insert into tasks (id, story_id, title, description, created_at, updated_at) values (@id, @storyId, @title, @description, @createdAt, @updatedAt)", _con, _tx);
-                        cmd.Parameters.AddWithValue("@id", sta.TaskId.Value.ToString());
-                        cmd.Parameters.AddWithValue("@storyId", sta.StoryId.Value.ToString());
-                        cmd.Parameters.AddWithValue("@title", sta.Title.Value);
-                        cmd.Parameters.AddWithValue("@description", sta.Description?.Value);
-                        cmd.Parameters.AddWithValue("@createdAt", now);
-                        cmd.Parameters.AddWithValue("@updatedAt", now);
-                        var rows = await cmd.ExecuteNonQueryAsync();
-                        Debug.Assert(rows == 1);
-                        break;
-                    }
+                {
+                    await using var cmd = new SQLiteCommand(
+                        "insert into tasks (id, story_id, title, description, created_at, updated_at) values (@id, @storyId, @title, @description, @createdAt, @updatedAt)",
+                        _con, _tx);
+                    var p = cmd.Parameters;
+                    p.AddWithValue("@id", sta.TaskId.Value.ToString());
+                    p.AddWithValue("@storyId", sta.StoryId.Value.ToString());
+                    p.AddWithValue("@title", sta.Title.Value);
+                    p.AddWithValue("@description", sta.Description?.Value);
+                    p.AddWithValue("@createdAt", now);
+                    p.AddWithValue("@updatedAt", now);
+                    var rows = await cmd.ExecuteNonQueryAsync();
+                    Debug.Assert(rows == 1);
+                    break;
+                }
                 default:
                     throw new NotImplementedException(evt.GetType().Name);
             }

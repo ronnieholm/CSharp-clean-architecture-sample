@@ -5,18 +5,18 @@ Status: Accepted and active.
 ## Context
 
 .NET projects traditionally split each layer of the architecture into its own
-assembly. We don't believe this upfront splitting is sufficiently valueable over
+assembly. We don't believe this upfront splitting is sufficiently valuable over
 creating folders in a single assembly. Don't split the Domain or Application
 layers into separate assemblies the need for sharing these assemblies arise,
 which rarely happens in practice.
 
-The perceived, theorical advantage of multiple assemblies may be in that it's
-clearer which NuGet dependenicies each assembly has. Consulting the project
+The perceived, theoretical advantage of multiple assemblies may be in that it's
+clearer which NuGet dependencies each assembly has. Consulting the project
 file, it's obvious that Domain depends (should) only on the .NET framework, that
 Application (should) only depend on Domain and .NET framework, and so on.
 
 Another perceived benefit is that is makes it harder for developers to skip
-layers. But enforcing this through assemblies bounderies over improved
+layers. But enforcing this through assemblies boundaries over improved
 communication is a mistake.
 
 Many assemblies, each mostly serially dependent on each other also prolongs

@@ -28,7 +28,7 @@ what the client sent and replay a failing request.
 
 A pipeline may be implemented in at least three different ways:
 
-1. Directly adding any before and after code to the request dipatcher method.
+1. Directly adding any before and after code to the request dispatcher method.
 1. Implementing each behavior as a class with behavior state and a
    reference to the next behavior.
 1. Implementing each behavior as a method closing over any behavior state and a

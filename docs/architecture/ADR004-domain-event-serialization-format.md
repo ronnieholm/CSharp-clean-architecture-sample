@@ -16,7 +16,7 @@ types, we didn't have that issue.
 ## Decision
 
 We opt _not_ to use primitive types within domain events. Instead we implement
-methods for custom serializing each domain event to JSON. While more labories,
+methods for custom serializing each domain event to JSON. While more laborious,
 it's more true to the spirit of domain events being internal to the domain.
 
 ## Consequences

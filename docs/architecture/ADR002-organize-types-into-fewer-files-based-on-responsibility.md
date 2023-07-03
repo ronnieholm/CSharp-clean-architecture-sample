@@ -44,7 +44,7 @@ aggregate this quickly becomes unwieldy.
 
 Without the `Story` folder, instead we could change the namespace in each .cs to
 include the aggregate name. We chose not to because most IDEs generate and
-verify for the common case of namespace maching file location.
+verify for the common case of namespace matching file location.
 
 ## Consequences
 

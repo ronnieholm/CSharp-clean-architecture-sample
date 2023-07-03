@@ -4,7 +4,7 @@ Status: Accepted and active.
 
 ## Context
 
-Weather we should pass `createdAt` and `updatedat` timestamps into the
+Weather we should pass `createdAt` and `updatedAt` timestamps into the
 constructor of entities and domain events depends on what constituted creation
 and update time.
 
